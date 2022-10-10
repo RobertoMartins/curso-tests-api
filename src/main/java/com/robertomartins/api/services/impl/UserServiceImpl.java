@@ -4,6 +4,7 @@ import com.robertomartins.api.domain.User;
 import com.robertomartins.api.domain.dto.UserDTO;
 import com.robertomartins.api.repositories.UserRepository;
 import com.robertomartins.api.services.UserService;
+import com.robertomartins.api.services.exceptions.DataIntegratyViolationException;
 import com.robertomartins.api.services.exceptions.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(UserDTO obj) {
-        return repository.save(mapper.map(obj,User.class));
+        findByEmail(obj);
+        return repository.save(mapper.map(obj, User.class));
+    }
+
+    @Override
+    public User update(UserDTO obj) {
+        findByEmail(obj);
+        return repository.save(mapper.map(obj, User.class));
+    }
+
+    private void findByEmail(UserDTO obj) {
+        Optional<User> user = repository.findByEmail(obj.getEmail());
+        if (user.isPresent() && !user.get().getId().equals(obj.getId())) {
+            throw new DataIntegratyViolationException("Email já cadastrado no sistema");
+        }
     }
 }
