@@ -31,6 +31,7 @@ class UserServiceImplTest {
     public static final String PASSWORD = "1234";
     public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
     public static final int INDEX = 0;
+    public static final String EMAIL_JA_CADASTRADO_NO_SISTEMA = "Email já cadastrado no sistema";
 
     @InjectMocks
     private UserServiceImpl service;
@@ -119,13 +120,37 @@ class UserServiceImplTest {
             service.create(userDTO);
         } catch (Exception ex) {
             assertEquals(DataIntegratyViolationException.class, ex.getClass());
-            assertEquals("Email já cadastrado no sistema", ex.getMessage());
+            assertEquals(EMAIL_JA_CADASTRADO_NO_SISTEMA, ex.getMessage());
         }
+
+    }
+    @Test
+    void whenUpdateAndReturnSuccess() {
+        when(repository.save(any())).thenReturn(user);
+
+        User result = service.update(userDTO);
+
+        assertNotNull(result);
+        assertEquals(User.class, result.getClass());
+        assertEquals(ID, result.getId());
+        assertEquals(result.getName(), NAME);
+        assertEquals(result.getEmail(), EMAIL);
+        assertEquals(result.getPassword(), PASSWORD);
 
     }
 
     @Test
-    void update() {
+    void whenUpdateAndReturnAnDataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try {
+            optionalUser.get().setId(2);
+            service.update(userDTO);
+        } catch (Exception ex) {
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals(EMAIL_JA_CADASTRADO_NO_SISTEMA, ex.getMessage());
+        }
+
     }
 
     @Test
