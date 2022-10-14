@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class UserResourceTest {
 
@@ -107,9 +107,9 @@ class UserResourceTest {
 
         assertNotNull(response);
         assertNotNull(response.getBody());
-        assertEquals(ResponseEntity.class,response.getClass());
+        assertEquals(ResponseEntity.class, response.getClass());
         assertEquals(UserDTO.class, response.getBody().getClass());
-        assertEquals(HttpStatus.OK,response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         assertEquals(ID, response.getBody().getId());
         assertEquals(NAME, response.getBody().getName());
@@ -117,7 +117,14 @@ class UserResourceTest {
     }
 
     @Test
-    void delete() {
+    void whenDeleteThenReturnSuccess() {
+        doNothing().when(service).delete(anyInt());
+
+        ResponseEntity<UserDTO> response = resource.delete(ID);
+        assertNotNull(response);
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(service, times(1)).delete(anyInt());
     }
 
     private void startUser() {
