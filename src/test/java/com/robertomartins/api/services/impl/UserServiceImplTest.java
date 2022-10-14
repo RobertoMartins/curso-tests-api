@@ -17,8 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -116,6 +115,7 @@ class UserServiceImplTest {
 
 
         try {
+            assertTrue(optionalUser.isPresent());
             optionalUser.get().setId(2);
             service.create(userDTO);
         } catch (Exception ex) {
@@ -145,6 +145,7 @@ class UserServiceImplTest {
         when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
         try {
+            assertTrue(optionalUser.isPresent());
             optionalUser.get().setId(2);
             service.update(userDTO);
         } catch (Exception ex) {
